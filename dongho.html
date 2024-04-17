@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alarm Clock</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #clock {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #controls {
+      margin-top: 20px;
+    }
+
+    input[type="number"] {
+      font-size: 1.2rem;
+      padding: 10px;
+      width: 60px;
+      margin: 0 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      margin: 0 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert {
+      color: red;
+      font-size: 1.1rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="clock">00:00</div>
+  <div id="controls">
+    <input type="number" id="minutesInput" placeholder="Phút">
+    <input type="number" id="secondsInput" placeholder="Giây">
+    <br>
+    <br>
+    <button id="startButton">START</button>
+    <br>
+    <br>
+    <button id="resetButton">RESET</button>
+  </div>
+
+  <audio id="alarmSound" src="kirby-alarm-clock-127079.mp3"></audio>
+
+  <script>
+    let countdown;
+    const clockDisplay = document.getElementById('clock');
+    const minutesInput = document.getElementById('minutesInput');
+    const secondsInput = document.getElementById('secondsInput');
+    const startButton = document.getElementById('startButton');
+    const resetButton = document.getElementById('resetButton');
+    const alarmSound = document.getElementById('alarmSound');
+
+    function startTimer() {
+      const minutes = parseInt(minutesInput.value, 10) || 0;
+      const seconds = parseInt(secondsInput.value, 10) || 0;
+      const totalTimeInSeconds = minutes * 60 + seconds;
+
+      if (totalTimeInSeconds <= 0) {
+        alert("Vui lòng nhập thời gian hợp lệ.");
+        return;
+      }
+
+      let timeLeft = totalTimeInSeconds;
+      clearInterval(countdown);
+
+      countdown = setInterval(() => {
+        const minutesLeft = Math.floor(timeLeft / 60);
+        const secondsLeft = timeLeft % 60;
+
+        clockDisplay.textContent = `${minutesLeft < 10 ? '0' : ''}${minutesLeft}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+
+        timeLeft--;
+
+        if (timeLeft < 0) {
+          clearInterval(countdown);
+          clockDisplay.textContent = "00:00";
+          alarmSound.play();
+          setTimeout(() => {
+            alarmSound.pause();
+            alarmSound.currentTime = 0;
+            alert("Hết giờ!");
+          }, 1000);
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(countdown);
+      clockDisplay.textContent = "00:00";
+      minutesInput.value = "";
+      secondsInput.value = "";
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+    }
+
+    startButton.addEventListener('click', startTimer);
+    resetButton.addEventListener('click', resetTimer);
+  </script>
+</body>
+</html>
